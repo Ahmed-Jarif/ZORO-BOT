@@ -1,28 +1,52 @@
+const moment = require('moment-timezone');
+
 module.exports = {
   config: {
     name: "uptime",
-    aliases: ["up", "upt"],
     version: "1.0",
-    author: "Shinpei",
+    aliases: ["upt", "up"],
+    author: "kaizenjixMahi( Don't change credit🥵)",
     role: 0,
+    cooldown: 5,
     shortDescription: {
-      en: "Displays the uptime of the bot."
+      vi: "",
+      en: "Sends information about the bot and admin."
     },
     longDescription: {
-      en: "Displays the amount of time that the bot has been running for."
+      vi: "",
+      en: "Sends information about the bot and admin."
     },
-    category: "System",
+    category: "system",
     guide: {
-      en: "Use {p}uptime to display the uptime of the bot."
-    }
+      en: "{pn}"
+    },
+    envConfig: {}
   },
-  onStart: async function ({ api, event, args }) {
+
+  onStart: async function ({ message, prefix }) {
+    
+    const now = moment();
+    const date = now.format('MMMM Do YYYY');
+    
     const uptime = process.uptime();
     const seconds = Math.floor(uptime % 60);
     const minutes = Math.floor((uptime / 60) % 60);
     const hours = Math.floor((uptime / (60 * 60)) % 24);
     const days = Math.floor(uptime / (60 * 60 * 24));
-    const uptimeString = `${hours} hours ${minutes} minutes ${seconds} second`;
-    api.sendMessage(`Hello Master, the bot has been running for ${uptimeString}.`, event.threadID);
+    const uptimeString = `${days} days ${hours} hours ${minutes} minutes ${seconds} seconds`;
+
+    const additionalText = "";
+
+    // Combine the bot information and additional text in a single message
+message.reply(`===[𝗕𝗔𝗕𝗬 𝗨𝗣𝗧]===\n\n𝗗𝗮𝘁𝗲: ${date}\n\n𝗨𝗽𝘁𝗶𝗺𝗲: ${uptimeString}
+      
+      ${additionalText}
+    `);
+  },
+
+  onChat: async function ({ event, message, getLang, prefix }) {
+    if (event.body && event.body.toLowerCase() === "up") {
+      this.onStart({ message, prefix });
+    }
   }
 };
