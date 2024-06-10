@@ -1,52 +1,43 @@
-const moment = require('moment-timezone');
-
 module.exports = {
   config: {
     name: "uptime",
+aliases: ["upt"],
     version: "1.0",
-    aliases: ["upt", "up"],
-    author: "kaizenjixMahi( Don't change credit🥵)",
+    author: "OtinXSandip",
     role: 0,
-    cooldown: 5,
     shortDescription: {
-      vi: "",
-      en: "Sends information about the bot and admin."
+      en: "Displays the total number of users of the bot and check uptime "
     },
     longDescription: {
-      vi: "",
-      en: "Sends information about the bot and admin."
+      en: "Displays the total number of users who have interacted with the bot and check uptime."
     },
     category: "system",
     guide: {
-      en: "{pn}"
-    },
-    envConfig: {}
+      en: "{n}"
+    }
   },
+  onStart: async function(){},
+  onChat: async function ({ api, event, args, usersData, threadsData }) {
+    const input = event.body;
+          if(input && input.trim().toLowerCase().startsWith('upt') ||     input && input.trim().toLowerCase().startsWith('uptime')){
+           const data = input.split(" ");
+           data.shift();
 
-  onStart: async function ({ message, prefix }) {
-    
-    const now = moment();
-    const date = now.format('MMMM Do YYYY');
-    
-    const uptime = process.uptime();
-    const seconds = Math.floor(uptime % 60);
-    const minutes = Math.floor((uptime / 60) % 60);
-    const hours = Math.floor((uptime / (60 * 60)) % 24);
-    const days = Math.floor(uptime / (60 * 60 * 24));
-    const uptimeString = `${days} days ${hours} hours ${minutes} minutes ${seconds} seconds`;
-
-    const additionalText = "";
-
-    // Combine the bot information and additional text in a single message
-message.reply(`===[𝗕𝗔𝗕𝗬 𝗨𝗣𝗧]===\n\n𝗗𝗮𝘁𝗲: ${date}\n\n𝗨𝗽𝘁𝗶𝗺𝗲: ${uptimeString}
+    try {
+      const allUsers = await usersData.getAll();
+      const allThreads = await threadsData.getAll();
+      const uptime = process.uptime();
       
-      ${additionalText}
-    `);
-  },
-
-  onChat: async function ({ event, message, getLang, prefix }) {
-    if (event.body && event.body.toLowerCase() === "up") {
-      this.onStart({ message, prefix });
+      const hours = Math.floor(uptime / 3600);
+      const minutes = Math.floor((uptime % 3600) / 60);
+      const seconds = Math.floor(uptime % 60);
+      
+      const uptimeString = `${hours}Hrs ${minutes}min ${seconds}sec`;
+            api.sendMessage(`𝗧𝗮𝗻𝗷𝗶𝗿𝗼 𝗞𝗮𝗺𝗮𝗱𝗼\n⏰ | Bot running time\n☞ ${uptimeString}\n\n👪 | Total Users\n☞ ${allUsers.length}\n🌸 | Total threads\n☞ ${allThreads.length}`, event.threadID);
+    } catch (error) {
+      console.error(error);
+      api.sendMessage("An error occurred while retrieving data.", event.threadID);
     }
   }
-};
+}
+}; 
